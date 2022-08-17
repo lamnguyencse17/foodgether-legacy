@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import router from "./routers";
+import cors from "cors";
 
 dotenv.config();
 
@@ -12,6 +13,21 @@ if (!port) {
 }
 
 app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) {
+        callback(new Error("No Origin"));
+      } else {
+        if (origin.includes("localhost") || origin.includes("foodgether")) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      }
+    },
+  })
+);
 
 app.use("/", router);
 
