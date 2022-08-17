@@ -7,12 +7,12 @@ export const redisFindUserFromPhone = async (key: string) => {
   if (!rawUser) {
     return null
   }
-  return JSON.parse(rawUser) as User
+  return Object(rawUser) as User
 }
 
 export const redisCacheUserFromPhone = async (key: string, user: User) => {
   const redis = getRedisClient()
-  await redis.set(key, JSON.stringify(user), {
+  return redis.set(key, JSON.stringify(user), {
     ex: 60 * 5,
   })
 }

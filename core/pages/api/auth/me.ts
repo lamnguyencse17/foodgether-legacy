@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { JWT_SECRET } from '../../libs/config'
-import { UserClaim, verifyTokenWithDb } from '../../libs/auth'
+import { JWT_SECRET } from '../../../libs/config'
+import { UserClaim, verifyTokenWithDb } from '../../../libs/auth'
 
 type Data =
   | {

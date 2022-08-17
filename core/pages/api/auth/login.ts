@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
-import { IS_PRODUCTION, JWT_SECRET } from '../../libs/config'
-import { HiddenUserData, hideUserData, loginSchema } from '../../libs/auth'
-import { findUserByPhone } from '../../libs/db/users'
+import { IS_PRODUCTION, JWT_SECRET } from '../../../libs/config'
+import { HiddenUserData, hideUserData, loginSchema } from '../../../libs/auth'
+import { findUserByPhone } from '../../../libs/db/users'
 import bcrypt from 'bcryptjs'
 import cookie from 'cookie'
 
@@ -18,23 +18,16 @@ export default async function handler(
 ) {
   const { phoneNumber, pin } = loginSchema.parse(req.body)
   const user = await findUserByPhone(phoneNumber)
+
   if (!user) {
-    return {
-      status: 403,
-      body: {
-        message: 'Invalid email or password',
-      },
-    }
+    return res.status(403).send({message: 'Your phone number is not registered'})
   }
   const isMatch = await bcrypt.compare(pin, user.pin)
+
   if (!isMatch) {
-    return {
-      status: 403,
-      body: {
-        message: 'Invalid email or password',
-      },
-    }
+    return res.status(403).send({message: 'Your pin is incorrect'})
   }
+
   const token = jwt.sign(
     { id: user.id, phoneNumber: user.phoneNumber, name: user.name },
     JWT_SECRET,
@@ -42,6 +35,7 @@ export default async function handler(
       expiresIn: '1d',
     }
   )
+
   res.setHeader(
     'set-cookie',
     cookie.serialize('Authorization', token, {

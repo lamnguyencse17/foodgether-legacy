@@ -34,7 +34,7 @@ const Login: NextPage = () => {
       //   if (setUser) {
       //     setUser({ ...user, isLoading: true });
       //   }
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(values),
         headers: {
