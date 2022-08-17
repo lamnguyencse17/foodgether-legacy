@@ -1,7 +1,12 @@
 import puppeteer, { Page } from "puppeteer";
 
 export const scrapeRestaurant = async (url: string) => {
-  const browser = await puppeteer.launch({ headless: true });
+  if (!process.env.BROWSERLESS) {
+    throw new Error("process.env.BROWSERLESS is required");
+  }
+  const browser = await puppeteer.connect({
+    browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS}`,
+  });
   const page = await browser.newPage();
   await page.goto(url);
   return scrape(page);

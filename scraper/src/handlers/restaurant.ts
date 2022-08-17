@@ -15,6 +15,7 @@ export const getRestaurantHandler = async (req: Request, res: Response) => {
     if (err instanceof z.ZodError) {
       return res.status(400).json({ message: err.issues });
     }
+    console.log(err);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
