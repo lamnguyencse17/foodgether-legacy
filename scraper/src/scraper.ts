@@ -10,7 +10,6 @@ export const scrapeRestaurant = async (url: string) => {
   });
   const page = await browser.newPage();
   await page.goto(url);
-  browser.close();
   return scrape(page);
 };
 
@@ -56,6 +55,7 @@ const scrape = async (page: Page) =>
       if (isMenuReady && isRestaurantReady) {
         console.log("Shopee Menu Identified");
         clearInterval(menuInterval);
+        page.browser().close();
         resolve({ restaurant, menu });
       }
       if (totalTime === 20 * 1000) {

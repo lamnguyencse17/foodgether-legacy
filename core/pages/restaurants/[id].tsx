@@ -74,6 +74,7 @@ const Restaurant: NextPage<RestaurantProps> = ({
       })
       .catch((err) => console.log(err))
   }, [])
+  console.log(fetchedRestaurant === cachedRestaurant)
   const restaurant = fetchedRestaurant ? fetchedRestaurant : cachedRestaurant
   if (!restaurant) {
     return <div>Don&apos;t have id yet</div>

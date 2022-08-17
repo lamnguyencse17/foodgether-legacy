@@ -6,8 +6,10 @@
   "author": "Lam Nguyen",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^4.2.1",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "puppeteer": "^16.1.1",
@@ -19,11 +21,15 @@
     "@types/node": "^18.7.5",
     "concurrently": "^7.3.0",
     "nodemon": "^2.0.19",
+    "prisma": "^4.2.1",
+    "shx": "^0.3.4",
     "typescript": "^4.7.4"
   },
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "start": "node dist/index.js",
-    "build": "npx tsc"
+    "postinstall": "npx prisma generate",
+    "build": "npx tsc",
+    "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate"
   }
 }
