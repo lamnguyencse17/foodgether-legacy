@@ -8,7 +8,7 @@ export const scrapeRestaurant = async (url: string) => {
   //     browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS}`,
   //   });
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
