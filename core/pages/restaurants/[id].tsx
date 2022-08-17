@@ -56,8 +56,17 @@ type RestaurantProps = {
 const Restaurant: NextPage<RestaurantProps> = ({ restaurant }) => {
   const [isHydrated, setHydrated] = useState(false)
   useEffect(() => {
-    fetch('/api/restaurants/a')
+    fetch('https://foodgether-scraper.herokuapp.com/restaurants', {
+      method: 'POST',
+      body: JSON.stringify({
+        url: 'https://shopeefood.vn/ho-chi-minh/rules-of-tea-tra-sua-de-vuong-nguyen-van-cu',
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
       .then(async (result) => {
+        setHydrated(true)
         console.log(await result.json())
       })
       .catch((err) => console.log(err))
