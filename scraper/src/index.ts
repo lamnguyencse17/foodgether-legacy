@@ -16,14 +16,14 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) {
-        callback(new Error("No Origin"));
+      if (
+        !origin ||
+        origin.includes("localhost") ||
+        origin.includes("foodgether")
+      ) {
+        callback(null, true);
       } else {
-        if (origin.includes("localhost") || origin.includes("foodgether")) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
+        callback(new Error("Not allowed by CORS"));
       }
     },
   })
