@@ -16,7 +16,7 @@ import {
   getIdPathForRestaurant,
   getRestaurantFromId,
 } from '../../libs/db/restaurant'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const menuIds = await getIdPathForRestaurant()
@@ -53,28 +53,33 @@ type RestaurantProps = {
   restaurant: Awaited<Prisma.PromiseReturnType<typeof getRestaurantFromId>>
 }
 
+const fetcher = async (url: string, shopeeUrl: string | null) => {
+  console.log('Processing shopee url: ', shopeeUrl)
+  if (!shopeeUrl) {
+    return null
+  }
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      url: shopeeUrl,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((res) => res.json())
+}
+
 const Restaurant: NextPage<RestaurantProps> = ({
   restaurant: cachedRestaurant,
 }) => {
-  const [fetchedRestaurant, setRestaurant] = useState(cachedRestaurant)
-  const [isHydrated, setHydrated] = useState(false)
-  useEffect(() => {
-    fetch('https://foodgether-scraper.herokuapp.com/restaurants', {
-      method: 'POST',
-      body: JSON.stringify({
-        url: 'https://shopeefood.vn/ho-chi-minh/rules-of-tea-tra-sua-de-vuong-nguyen-van-cu',
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(async (result) => {
-        setHydrated(true)
-        console.log(await result.json())
-      })
-      .catch((err) => console.log(err))
-  }, [])
-  console.log(fetchedRestaurant === cachedRestaurant)
+  const { data, error } = useSWR(
+    [
+      'https://foodgether-scraper.herokuapp.com/restaurants',
+      cachedRestaurant?.url,
+    ],
+    fetcher
+  )
+  const fetchedRestaurant = data?.restaurant
   const restaurant = fetchedRestaurant ? fetchedRestaurant : cachedRestaurant
   if (!restaurant) {
     return <div>Don&apos;t have id yet</div>
@@ -91,7 +96,7 @@ const Restaurant: NextPage<RestaurantProps> = ({
       </Head>
       <Box p="2" height="100%">
         <Flex direction="column" height="100%" gap="2">
-          {!isHydrated && (
+          {!fetchedRestaurant && (
             <Flex
               backgroundColor="orange.200"
               direction="row"
