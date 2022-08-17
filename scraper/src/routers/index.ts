@@ -3,7 +3,7 @@ import restaurantRouter from "./restaurant";
 
 const router = express.Router();
 
-router.use("/menu", restaurantRouter);
+router.use("/restaurants", restaurantRouter);
 router.get("/", (req, res) => {
   return res.send("Hello World");
 });
