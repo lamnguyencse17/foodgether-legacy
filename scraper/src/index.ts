@@ -13,7 +13,7 @@ if (!port) {
 
 app.use(bodyParser.json());
 
-app.get("/", router);
+app.use("/", router);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at port ${port}`);

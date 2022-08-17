@@ -1,9 +1,9 @@
 import express from "express";
-import menuRouter from "./menu";
+import restaurantRouter from "./restaurant";
 
 const router = express.Router();
 
-router.use("/menu", menuRouter);
+router.use("/menu", restaurantRouter);
 router.get("/", (req, res) => {
   return res.send("Hello World");
 });
