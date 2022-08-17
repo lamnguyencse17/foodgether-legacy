@@ -4,15 +4,13 @@ export const scrapeRestaurant = async (url: string) => {
   if (!process.env.BROWSERLESS) {
     throw new Error("process.env.BROWSERLESS is required");
   }
-  //   const browser = await puppeteer.connect({
-  //     browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.BROWSERLESS}`,
-  //   });
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
   await page.goto(url);
+  browser.close();
   return scrape(page);
 };
 
@@ -34,6 +32,7 @@ const scrape = async (page: Page) =>
         menu = await response.json();
         if (menu && menu.reply && menu.result !== "success") {
           clearInterval(menuInterval);
+          page.browser().close();
           reject("Failed to get menu");
         }
         menu = menu.reply.menu_infos as Menu[];
@@ -46,6 +45,7 @@ const scrape = async (page: Page) =>
         restaurant = await response.json();
         if (restaurant && restaurant.reply && restaurant.result !== "success") {
           clearInterval(menuInterval);
+          page.browser().close();
           reject("Failed to get restaurant");
         }
         restaurant = restaurant.reply.delivery_detail;
@@ -60,6 +60,7 @@ const scrape = async (page: Page) =>
       }
       if (totalTime === 20 * 1000) {
         clearInterval(menuInterval);
+        page.browser().close();
         reject("Timeout while getting menu");
       }
       totalTime += 100;

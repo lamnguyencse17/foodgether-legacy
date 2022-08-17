@@ -53,7 +53,10 @@ type RestaurantProps = {
   restaurant: Awaited<Prisma.PromiseReturnType<typeof getRestaurantFromId>>
 }
 
-const Restaurant: NextPage<RestaurantProps> = ({ restaurant }) => {
+const Restaurant: NextPage<RestaurantProps> = ({
+  restaurant: cachedRestaurant,
+}) => {
+  const [fetchedRestaurant, setRestaurant] = useState(cachedRestaurant)
   const [isHydrated, setHydrated] = useState(false)
   useEffect(() => {
     fetch('https://foodgether-scraper.herokuapp.com/restaurants', {
@@ -71,6 +74,7 @@ const Restaurant: NextPage<RestaurantProps> = ({ restaurant }) => {
       })
       .catch((err) => console.log(err))
   }, [])
+  const restaurant = fetchedRestaurant ? fetchedRestaurant : cachedRestaurant
   if (!restaurant) {
     return <div>Don&apos;t have id yet</div>
   }
