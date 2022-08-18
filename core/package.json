@@ -10,7 +10,8 @@
     "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate",
     "postinstall": "yarn sync:prisma",
     "format": "yarn prettier --write .",
-    "test": "cross-env NODE_ENV=test yarn jest"
+    "test": "cross-env NODE_ENV=test yarn jest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.6",
@@ -35,6 +36,7 @@
     "zod-formik-adapter": "^1.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.25.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie": "^0.5.1",
     "@types/jest": "^28.1.6",
