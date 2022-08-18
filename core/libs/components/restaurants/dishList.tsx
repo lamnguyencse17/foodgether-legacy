@@ -15,31 +15,48 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Tag,
 } from '@chakra-ui/react'
+import { keyBy } from 'lodash'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import { GetRestaurantResult } from '../../../pages/restaurants/[id]'
+import OptionModal from './optionModal'
 
 type RestaurantDishListProps = {
   restaurant: NonNullable<GetRestaurantResult>
 }
 
 const RestaurantDishList = ({ restaurant }: RestaurantDishListProps) => {
+  const [targetId, setTargetId] = useState<string | null>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const keyedMenu = useMemo(() => {
+    if (!restaurant.menu.dishTypes) {
+      return null
+    }
+    return keyBy(
+      restaurant.menu.dishTypes.flatMap((dishType) => dishType.dishes),
+      'id'
+    )
+  }, [restaurant.menu])
+  const targetDish = useMemo(() => {
+    if (!targetId || !keyedMenu) {
+      return null
+    }
+    return keyedMenu[targetId]
+  }, [targetId])
   const menu = restaurant.menu
-  //   const handleOptionClick = ()
+  const handleOpenOption = (id: string) => {
+    setTargetId(id)
+    onOpen()
+  }
+  const handleCloseOption = () => {
+    setTargetId(null)
+    onClose()
+  }
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <div>hahah</div>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
       <Grid templateColumns="repeat(4, 1fr)" h="fit-content" gap={10}>
         <GridItem
           colSpan={1}
@@ -94,12 +111,20 @@ const RestaurantDishList = ({ restaurant }: RestaurantDishListProps) => {
                           />
                         </GridItem>
                         <GridItem colSpan={[5, null, 4]}>
-                          <ChakraLink onClick={() => onOpen()}>
-                            <Text fontSize="lg" fontWeight="semibold">
-                              {dish.name}
-                            </Text>
-                          </ChakraLink>
-
+                          <Text fontSize="lg" fontWeight="semibold">
+                            {dish.name}
+                          </Text>
+                          {dish.options.length !== 0 && (
+                            <Tag colorScheme="orange">
+                              <ChakraLink
+                                onClick={() =>
+                                  handleOpenOption(dish.id.toString())
+                                }
+                              >
+                                Options available
+                              </ChakraLink>
+                            </Tag>
+                          )}
                           <Text fontSize="md">{dish.description}</Text>
                         </GridItem>
                         <GridItem colSpan={[5, null, 1]}>
@@ -123,6 +148,11 @@ const RestaurantDishList = ({ restaurant }: RestaurantDishListProps) => {
           ))}
         </GridItem>
       </Grid>
+      <OptionModal
+        dish={targetDish}
+        handleCloseOption={handleCloseOption}
+        isOpen={isOpen && !!targetDish}
+      />
     </>
   )
 }

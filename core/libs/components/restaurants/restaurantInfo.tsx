@@ -14,6 +14,11 @@ type RestaurantInfoProps = {
   restaurant: NonNullable<GetRestaurantResult>
 }
 
+export type DishType = NonNullable<
+  RestaurantInfoProps['restaurant']['menu']['dishTypes']
+>
+export type Dish = DishType[0]['dishes'][0]
+
 const RestaurantInfo = ({ restaurant }: RestaurantInfoProps) => {
   const restaurantCover = restaurant.photos[restaurant.photos.length - 1]
   const restaurantCoverAlt = `foodgether ${restaurant.name} cover photo`

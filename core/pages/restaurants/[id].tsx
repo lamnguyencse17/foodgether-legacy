@@ -90,7 +90,6 @@ const Restaurant: NextPage<RestaurantProps> = ({
     return <NotFound />
   }
   const title = `Foodgether for ${restaurant.name}`
-  const menu = restaurant.menu
   return (
     <Box height="100%">
       <Head>
