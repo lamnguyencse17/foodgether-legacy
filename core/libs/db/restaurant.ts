@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
-import { prisma } from './prisma'
+import { Context } from './context'
 
-export const getIdPathForRestaurant = async () => {
-  const restaurants = await prisma.restaurant.findMany({
+export const getIdPathForRestaurant = async (ctx: Context) => {
+  const restaurants = await ctx.prisma.restaurant.findMany({
     select: {
       id: true,
     },
@@ -10,8 +10,8 @@ export const getIdPathForRestaurant = async () => {
   return restaurants.map((restaurant) => restaurant.id)
 }
 
-export const getRestaurantFromId = async (id: string) => {
-  const restaurant = await prisma.restaurant.findUnique({
+export const getRestaurantFromId = async (ctx: Context, id: string) => {
+  const restaurant = await ctx.prisma.restaurant.findUnique({
     where: {
       id,
     },

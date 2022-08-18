@@ -10,7 +10,7 @@
     "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate",
     "postinstall": "yarn sync:prisma",
     "format": "yarn prettier --write .",
-    "test": "yarn jest"
+    "test": "cross-env NODE_ENV=test yarn jest"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.6",
@@ -42,6 +42,7 @@
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "cross-env": "^7.0.3",
     "eslint": "8.21.0",
     "eslint-config-next": "12.2.5",
     "eslint-config-prettier": "^8.5.0",

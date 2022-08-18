@@ -3,6 +3,7 @@
     "postinstall": "yarn husky install "
   },
   "devDependencies": {
-    "husky": "^8.0.1"
+    "husky": "^8.0.1",
+    "jest-mock-extended": "^2.0.7"
   }
 }

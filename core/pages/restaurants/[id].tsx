@@ -25,9 +25,11 @@ import useSWR from 'swr/immutable'
 import { Fetcher } from 'swr'
 import Link from 'next/link'
 import NotFound from '../../public/notfound.gif'
+import { createPrismaContext } from '../../libs/db/context'
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const menuIds = await getIdPathForRestaurant()
+  const prismaCtx = createPrismaContext()
+  const menuIds = await getIdPathForRestaurant(prismaCtx)
   return {
     paths: menuIds.map((id) => ({ params: { id } })),
     fallback: true,
@@ -41,7 +43,8 @@ interface SingleRestaurantContext extends ParsedUrlQuery {
 export const getStaticProps: GetStaticProps = async (context) => {
   const { id } = context.params as SingleRestaurantContext
   try {
-    const restaurant = await getRestaurantFromId(id)
+    const prismaCtx = createPrismaContext()
+    const restaurant = await getRestaurantFromId(prismaCtx, id)
     return {
       props: {
         restaurant,
