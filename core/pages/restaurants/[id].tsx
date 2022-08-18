@@ -1,21 +1,7 @@
-import {
-  Box,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  List,
-  ListItem,
-  Link as ChakraLink,
-  Divider,
-} from '@chakra-ui/react'
+import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
 import { Prisma } from '@prisma/client'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/future/image'
 import { ParsedUrlQuery } from 'querystring'
 import {
   getIdPathForRestaurant,
@@ -23,9 +9,10 @@ import {
 } from '../../libs/db/restaurant'
 import useSWR from 'swr/immutable'
 import { Fetcher } from 'swr'
-import Link from 'next/link'
-import NotFound from '../../public/notfound.gif'
 import { createPrismaContext } from '../../libs/db/context'
+import NotFound from '../../libs/components/restaurants/notFound'
+import RestaurantInfo from '../../libs/components/restaurants/restaurantInfo'
+import RestaurantDishList from '../../libs/components/restaurants/dishList'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismaCtx = createPrismaContext()
@@ -60,7 +47,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   }
 }
 
-type GetRestaurantResult = Awaited<
+export type GetRestaurantResult = Awaited<
   Prisma.PromiseReturnType<typeof getRestaurantFromId>
 >
 
@@ -100,24 +87,9 @@ const Restaurant: NextPage<RestaurantProps> = ({
   const fetchedRestaurant = data?.restaurant
   const restaurant = fetchedRestaurant ? fetchedRestaurant : cachedRestaurant
   if (!restaurant) {
-    return (
-      <Flex
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        <Heading color="orange.600">
-          Uh oh... We are still looking for this restaurant
-        </Heading>
-        <Image src={NotFound} width="200" height="200" alt="" />
-        <Text color="orange.500">Come back later would be the best idea</Text>
-      </Flex>
-    )
+    return <NotFound />
   }
   const title = `Foodgether for ${restaurant.name}`
-  const restaurantCover = restaurant.photos[restaurant.photos.length - 1]
-  const restaurantCoverAlt = `foodgether ${restaurant.name} cover photo`
   const menu = restaurant.menu
   return (
     <Box height="100%">
@@ -141,122 +113,11 @@ const Restaurant: NextPage<RestaurantProps> = ({
               You are viewing a cached version of this restaurant
             </Flex>
           )}
-          <Grid
-            templateColumns="repeat(3, 1fr)"
-            h="fit-content"
-            gap={5}
-            marginBottom="5"
-            backgroundColor="orange.100"
-            padding="5"
-          >
-            <GridItem colSpan={[3, null, 1]}>
-              <Image
-                src={restaurantCover.value}
-                height={restaurantCover.height}
-                width={restaurantCover.width}
-                alt={restaurantCoverAlt}
-              />
-            </GridItem>
-            <GridItem colSpan={[3, null, 2]}>
-              <Flex direction="column" gap={5}>
-                <Link href={restaurant.url} passHref>
-                  <ChakraLink>
-                    <Heading color="orange.600">{restaurant.name}</Heading>
-                  </ChakraLink>
-                </Link>
-                <Flex direction="column">
-                  <Text fontSize="lg">{restaurant.address}</Text>
-                  <Text fontSize="md" color="gray.500">
-                    {restaurant.priceRange.minPrice} -{' '}
-                    {restaurant.priceRange.maxPrice}
-                  </Text>
-                </Flex>
-              </Flex>
-            </GridItem>
-          </Grid>
+          <RestaurantInfo restaurant={restaurant} />
           <Text fontSize="2xl" paddingLeft="5" color="orange.600">
             Menu
           </Text>
-          <Grid templateColumns="repeat(4, 1fr)" h="fit-content" gap={10}>
-            <GridItem
-              colSpan={1}
-              border="1px"
-              borderColor="orange.200"
-              height="fit-content"
-            >
-              <Stack>
-                {menu.dishTypes?.map((dishType) => (
-                  <Box id={`${dishType.id}-header`} key={dishType.id}>
-                    <Text fontSize="lg" paddingLeft="1">
-                      <Link href={`#${dishType.id}`}>
-                        <ChakraLink>{dishType.name}</ChakraLink>
-                      </Link>
-                    </Text>
-                  </Box>
-                ))}
-              </Stack>
-            </GridItem>
-            <GridItem colSpan={3} border="1px" borderColor="orange.200">
-              {menu.dishTypes?.map((dishType) => (
-                <Stack
-                  id={dishType.id.toString()}
-                  marginBottom="8"
-                  key={dishType.id}
-                >
-                  <Text
-                    fontSize="2xl"
-                    paddingLeft="1"
-                    fontWeight="bold"
-                    color="orange.600"
-                  >
-                    {dishType.name}
-                  </Text>
-                  <List spacing={3}>
-                    {dishType.dishes.map((dish) => {
-                      const dishPhoto = dish.photos[dish.photos.length - 1]
-                      return (
-                        <ListItem id={dish.id.toString()} key={dish.id}>
-                          <Grid
-                            templateColumns="repeat(6, 1fr)"
-                            h="fit-content"
-                            gap={2}
-                            padding={5}
-                          >
-                            <GridItem colSpan={[5, null, 1]}>
-                              <Image
-                                src={dishPhoto.value}
-                                width={dishPhoto.width}
-                                height={dishPhoto.height}
-                                alt={dish.name}
-                              />
-                            </GridItem>
-                            <GridItem colSpan={[5, null, 4]}>
-                              <Text fontSize="lg" fontWeight="semibold">
-                                {dish.name}
-                              </Text>
-                              <Text fontSize="md">{dish.description}</Text>
-                            </GridItem>
-                            <GridItem colSpan={[5, null, 1]}>
-                              <Text
-                                fontSize="lg"
-                                fontWeight="semibold"
-                                color="orange.500"
-                              >
-                                {dish.discountPrice
-                                  ? dish.discountPrice.text
-                                  : dish.price.text}
-                              </Text>
-                            </GridItem>
-                          </Grid>
-                          <Divider borderColor="orange.200" />
-                        </ListItem>
-                      )
-                    })}
-                  </List>
-                </Stack>
-              ))}
-            </GridItem>
-          </Grid>
+          <RestaurantDishList restaurant={restaurant} />
         </Flex>
       </Box>
     </Box>
