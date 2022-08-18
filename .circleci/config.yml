@@ -38,11 +38,19 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "yarn.lock" }}
       - node/install-packages:
           pkg-manager: yarn
       - run:
           name: build
           command: yarn build
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+            - ./.next/cache
 
 workflows:
   ci:

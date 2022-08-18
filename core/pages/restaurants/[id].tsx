@@ -24,6 +24,7 @@ import {
 import useSWR from 'swr/immutable'
 import { Fetcher } from 'swr'
 import Link from 'next/link'
+import NotFound from '../../public/notfound.gif'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const menuIds = await getIdPathForRestaurant()
@@ -96,7 +97,20 @@ const Restaurant: NextPage<RestaurantProps> = ({
   const fetchedRestaurant = data?.restaurant
   const restaurant = fetchedRestaurant ? fetchedRestaurant : cachedRestaurant
   if (!restaurant) {
-    return <div>Don&apos;t have id yet</div>
+    return (
+      <Flex
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        <Heading color="orange.600">
+          Uh oh... We are still looking for this restaurant
+        </Heading>
+        <Image src={NotFound} width="200" height="200" alt="" />
+        <Text color="orange.500">Come back later would be the best idea</Text>
+      </Flex>
+    )
   }
   const title = `Foodgether for ${restaurant.name}`
   const restaurantCover = restaurant.photos[restaurant.photos.length - 1]
@@ -124,7 +138,14 @@ const Restaurant: NextPage<RestaurantProps> = ({
               You are viewing a cached version of this restaurant
             </Flex>
           )}
-          <Grid templateColumns="repeat(3, 1fr)" h="fit-content">
+          <Grid
+            templateColumns="repeat(3, 1fr)"
+            h="fit-content"
+            gap={5}
+            marginBottom="5"
+            backgroundColor="orange.100"
+            padding="5"
+          >
             <GridItem colSpan={[3, null, 1]}>
               <Image
                 src={restaurantCover.value}
@@ -134,9 +155,20 @@ const Restaurant: NextPage<RestaurantProps> = ({
               />
             </GridItem>
             <GridItem colSpan={[3, null, 2]}>
-              <Stack>
-                <Heading>{restaurant.name}</Heading>
-              </Stack>
+              <Flex direction="column" gap={5}>
+                <Link href={restaurant.url} passHref>
+                  <ChakraLink>
+                    <Heading color="orange.600">{restaurant.name}</Heading>
+                  </ChakraLink>
+                </Link>
+                <Flex direction="column">
+                  <Text fontSize="lg">{restaurant.address}</Text>
+                  <Text fontSize="md" color="gray.500">
+                    {restaurant.priceRange.minPrice} -{' '}
+                    {restaurant.priceRange.maxPrice}
+                  </Text>
+                </Flex>
+              </Flex>
             </GridItem>
           </Grid>
           <Text fontSize="2xl" paddingLeft="5" color="orange.600">
@@ -145,7 +177,6 @@ const Restaurant: NextPage<RestaurantProps> = ({
           <Grid templateColumns="repeat(4, 1fr)" h="fit-content" gap={10}>
             <GridItem
               colSpan={1}
-              backgroundColor="orange.100"
               border="1px"
               borderColor="orange.200"
               height="fit-content"
@@ -162,12 +193,7 @@ const Restaurant: NextPage<RestaurantProps> = ({
                 ))}
               </Stack>
             </GridItem>
-            <GridItem
-              colSpan={3}
-              backgroundColor="orange.100"
-              border="1px"
-              borderColor="orange.200"
-            >
+            <GridItem colSpan={3} border="1px" borderColor="orange.200">
               {menu.dishTypes?.map((dishType) => (
                 <Stack
                   id={dishType.id.toString()}
@@ -208,7 +234,11 @@ const Restaurant: NextPage<RestaurantProps> = ({
                               <Text fontSize="md">{dish.description}</Text>
                             </GridItem>
                             <GridItem colSpan={[5, null, 1]}>
-                              <Text fontSize="lg" fontWeight="semibold">
+                              <Text
+                                fontSize="lg"
+                                fontWeight="semibold"
+                                color="orange.500"
+                              >
                                 {dish.discountPrice
                                   ? dish.discountPrice.text
                                   : dish.price.text}
