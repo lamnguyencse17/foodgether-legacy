@@ -31,8 +31,14 @@ jobs:
         with:
           node-version: "16"
       - run: yarn
+      - run: yarn sync:prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - run: npx playwright install --with-deps
       - name: Run tests
         run: yarn test:e2e
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ needs.test_setup.outputs.preview_url }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SCRAPER_API: ${{ secrets.SCRAPER_API }}
