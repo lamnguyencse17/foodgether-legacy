@@ -78,10 +78,7 @@ const Restaurant: NextPage<RestaurantProps> = ({
   restaurant: cachedRestaurant,
 }) => {
   const { data } = useSWR(
-    [
-      'https://foodgether-scraper.herokuapp.com/restaurants',
-      cachedRestaurant?.url,
-    ],
+    [`${process.env.SCRAPER_API}/restaurants`, cachedRestaurant?.url],
     fetcher
   )
   const fetchedRestaurant = data?.restaurant
