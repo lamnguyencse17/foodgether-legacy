@@ -30,7 +30,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
+      - run: echo $DATABASE_URL
       - run: yarn
+      - run: yarn sync:prisma
       - run: npx playwright install --with-deps
       - name: Run tests
         run: yarn test:e2e
