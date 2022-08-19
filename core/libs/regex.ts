@@ -1,2 +1,1 @@
-export const phoneNumberRegex =
-  /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])\d{7}$/
+export const phoneNumberRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g

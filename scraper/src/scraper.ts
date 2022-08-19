@@ -45,7 +45,7 @@ const scrape = async (page: Page) =>
           page.browser().close();
           reject("Failed to get menu");
         }
-        menu = menuResponse.reply.menu_infos as Menu[];
+        menu = menuResponse.reply.menu_infos;
         isMenuReady = true;
       }
       if (isGetDetailResponse(response)) {
