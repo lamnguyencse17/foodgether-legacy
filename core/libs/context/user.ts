@@ -3,24 +3,24 @@ import { createContext, Dispatch, SetStateAction } from 'react'
 export type UserContext = {
   id: string
   name: string
-  email: string
+  phoneNumber: string
   isLoading: boolean
 }
 
 export const userContextInitialValue = {
   id: '',
   name: '',
-  email: '',
+  phoneNumber: '',
   isLoading: true,
 }
 
-export const UserContext = createContext<{
+export const userContext = createContext<{
   user: typeof userContextInitialValue
   setUser?: Dispatch<
     SetStateAction<{
       id: string
       name: string
-      email: string
+      phoneNumber: string
       isLoading: boolean
     }>
   >

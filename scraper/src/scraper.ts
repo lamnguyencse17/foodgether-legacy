@@ -1,4 +1,4 @@
-import puppeteer, { Page } from "puppeteer";
+import puppeteer, { HTTPResponse, Page } from "puppeteer";
 
 export const scrapeRestaurant = async (url: string) => {
   if (!process.env.BROWSERLESS) {
@@ -13,41 +13,53 @@ export const scrapeRestaurant = async (url: string) => {
   return scrape(page);
 };
 
+const isGetDeliveryResponse = (response: HTTPResponse) =>
+  response.url().indexOf("get_delivery_dishes") > 0 &&
+  response.request().method() !== "OPTIONS";
+
+const isGetDetailResponse = (response: HTTPResponse) =>
+  response.url().indexOf("get_detail") > 0 &&
+  response.request().method() !== "OPTIONS";
+
 const scrape = async (page: Page) =>
   new Promise<ShopeeScrapeResult>((resolve, reject) => {
     console.log("Identifying Shopee Menu");
-    let menu: any = null;
-    let restaurant: any = null;
+    let menu: Menu[] | null = null;
+    let menuResponse: MenuResponse | null = null;
+    let restaurant: Restaurant | null = null;
+    let restaurantResponse: RestaurantResponse | null = null;
     let isMenuReady = false;
     let isRestaurantReady = false;
     let totalTime = 0;
 
     page.reload();
     page.on("response", async (response) => {
-      if (
-        response.url().indexOf("get_delivery_dishes") > 0 &&
-        response.request().method() !== "OPTIONS"
-      ) {
-        menu = await response.json();
-        if (menu && menu.reply && menu.result !== "success") {
+      if (isGetDeliveryResponse(response)) {
+        menuResponse = (await response.json()) as MenuResponse;
+        if (
+          menuResponse &&
+          menuResponse.reply &&
+          menuResponse.result !== "success"
+        ) {
           clearInterval(menuInterval);
           page.browser().close();
           reject("Failed to get menu");
         }
-        menu = menu.reply.menu_infos as Menu[];
+        menu = menuResponse.reply.menu_infos as Menu[];
         isMenuReady = true;
       }
-      if (
-        response.url().indexOf("get_detail") > 0 &&
-        response.request().method() !== "OPTIONS"
-      ) {
-        restaurant = await response.json();
-        if (restaurant && restaurant.reply && restaurant.result !== "success") {
+      if (isGetDetailResponse(response)) {
+        restaurantResponse = (await response.json()) as RestaurantResponse;
+        if (
+          restaurantResponse &&
+          restaurantResponse.reply &&
+          restaurantResponse.result !== "success"
+        ) {
           clearInterval(menuInterval);
           page.browser().close();
           reject("Failed to get restaurant");
         }
-        restaurant = restaurant.reply.delivery_detail;
+        restaurant = restaurantResponse.reply.delivery_detail;
         isRestaurantReady = true;
       }
     });
@@ -56,7 +68,10 @@ const scrape = async (page: Page) =>
         console.log("Shopee Menu Identified");
         clearInterval(menuInterval);
         page.browser().close();
-        resolve({ restaurant, menu });
+        if (menu && restaurant) {
+          resolve({ restaurant, menu });
+        }
+        reject("Failed to get menu or restaurant");
       }
       if (totalTime === 20 * 1000) {
         clearInterval(menuInterval);
@@ -66,6 +81,20 @@ const scrape = async (page: Page) =>
       totalTime += 100;
     }, 100);
   });
+
+export interface RestaurantResponse {
+  result: string;
+  reply: {
+    delivery_detail: Restaurant;
+  };
+}
+
+export interface MenuResponse {
+  result: string;
+  reply: {
+    menu_infos: Menu[];
+  };
+}
 
 export interface Price {
   text: string;

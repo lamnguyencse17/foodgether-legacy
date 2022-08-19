@@ -2,6 +2,7 @@ import { User } from '@prisma/client'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { z } from 'zod'
 import { JWT_SECRET } from './config'
+import { phoneNumberRegex } from './regex'
 
 export const verifyTokenWithDb = (token: string) => {
   if (!JWT_SECRET) {
@@ -19,9 +20,7 @@ export type UserClaim = {
 export type Claim = UserClaim & JwtPayload
 
 export const loginSchema = z.object({
-  phoneNumber: z
-    .string()
-    .regex(/^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/),
+  phoneNumber: z.string().regex(phoneNumberRegex),
   pin: z.string().trim().min(4).max(8),
 })
 

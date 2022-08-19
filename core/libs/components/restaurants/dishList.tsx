@@ -9,12 +9,6 @@ import {
   ListItem,
   Divider,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   Tag,
 } from '@chakra-ui/react'
 import { keyBy } from 'lodash'

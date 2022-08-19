@@ -12,9 +12,12 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useFormik } from 'formik'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
-import { loginSchema } from '../libs/auth'
+import { HiddenUserData, loginSchema } from '../libs/auth'
+import { useContext } from 'react'
+import { userContext } from '../libs/context/user'
 
 const Login: NextPage = () => {
+  const { user, setUser } = useContext(userContext)
   const toast = useToast()
   const router = useRouter()
   const {
@@ -31,9 +34,9 @@ const Login: NextPage = () => {
       pin: '',
     },
     onSubmit: async (values) => {
-      //   if (setUser) {
-      //     setUser({ ...user, isLoading: true });
-      //   }
+      if (setUser) {
+        setUser({ ...user, isLoading: true })
+      }
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(values),
@@ -52,10 +55,10 @@ const Login: NextPage = () => {
         })
         return
       }
-      //   const userData = (await response.json()) as HiddenUserData;
-      //   if (setUser) {
-      //     setUser({ ...userData, isLoading: false });
-      //   }
+      const userData = (await response.json()) as HiddenUserData
+      if (setUser) {
+        setUser({ ...userData, isLoading: false })
+      }
       await router.push('/')
     },
     validationSchema: toFormikValidationSchema(loginSchema),

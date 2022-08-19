@@ -3,10 +3,13 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import router from "./routers";
 import cors from "cors";
+import helmet from "helmet";
 
 dotenv.config();
 
 const app = express();
+app.disable("x-powered-by");
+app.use(helmet());
 const port = process.env.PORT || 4000;
 if (!port) {
   throw new Error("PORT environment variable is not set");
