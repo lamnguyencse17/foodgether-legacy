@@ -22,12 +22,14 @@ export default async function handler(
   if (!user) {
     return res
       .status(403)
-      .send({ message: 'Your phone number is not registered' })
+      .send({ message: 'Your phone number or pin is invalid' })
   }
   const isMatch = await bcrypt.compare(pin, user.pin)
 
   if (!isMatch) {
-    return res.status(403).send({ message: 'Your pin is incorrect' })
+    return res
+      .status(403)
+      .send({ message: 'Your phone number or pin is invalid' })
   }
 
   const token = jwt.sign(

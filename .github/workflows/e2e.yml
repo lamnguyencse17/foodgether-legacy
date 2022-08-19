@@ -36,6 +36,3 @@ jobs:
         run: yarn test:e2e
         env:
           PLAYWRIGHT_TEST_BASE_URL: ${{ needs.test_setup.outputs.preview_url }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          SCRAPER_API: ${{ secrets.SCRAPER_API }}
