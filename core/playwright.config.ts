@@ -10,7 +10,7 @@ const config: PlaywrightTestConfig = {
     command: 'yarn dev',
     url: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
     timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: process.env.CI === 'true',
   },
 }
 export default config
