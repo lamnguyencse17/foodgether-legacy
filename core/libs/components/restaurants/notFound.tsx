@@ -2,7 +2,6 @@ import { Flex, Heading, Text } from '@chakra-ui/react'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import NotFoundGif from '../../../public/notfound.gif'
-
 import { GetRestaurantResult } from '../../../pages/restaurants/[id]'
 import Head from 'next/head'
 

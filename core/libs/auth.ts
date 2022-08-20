@@ -1,15 +1,8 @@
 import { User } from '@prisma/client'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken'
 import { z } from 'zod'
-import { JWT_SECRET } from './config'
-import { phoneNumberRegex } from './regex'
 
-export const verifyTokenWithDb = (token: string) => {
-  if (!JWT_SECRET) {
-    throw new Error('JWT_SECRET is not defined')
-  }
-  return jwt.verify(token, JWT_SECRET) as Claim
-}
+import { phoneNumberRegex } from './regex'
 
 export type UserClaim = {
   id: string

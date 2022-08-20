@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { IS_PRODUCTION, JWT_SECRET } from '../../../libs/config'
-import { UserClaim, verifyTokenWithDb } from '../../../libs/auth'
+import { UserClaim } from '../../../libs/auth'
+import { verifyTokenWithDb } from '../../../libs/token'
 import { redisCheckBlacklistToken } from '../../../libs/redis/auth'
 import cookie from 'cookie'
 
@@ -22,7 +23,11 @@ export default async function handler(
     console.error('JWT_SECRET is not defined')
     return res.status(500).json({ message: 'Something went wrong' })
   }
-  const { id, name, phoneNumber, exp } = verifyTokenWithDb(token)
+  const payload = await verifyTokenWithDb(token)
+  if (!payload) {
+    return res.status(403).json({ message: 'Invalid token' })
+  }
+  const { id, name, phoneNumber, exp } = payload
   const isBlacklisted = await redisCheckBlacklistToken(`${id}-${exp}`)
   if (isBlacklisted) {
     res.setHeader(

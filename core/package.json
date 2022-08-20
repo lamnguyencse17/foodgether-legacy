@@ -10,7 +10,7 @@
     "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate",
     "format": "yarn prettier --write .",
     "test": "cross-env NODE_ENV=test yarn jest",
-    "test:e2e": "playwright test"
+    "test:e2e": "cross-env NODE_ENV=e2e playwright test"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.6",

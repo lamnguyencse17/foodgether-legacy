@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+test.describe.configure({ mode: 'parallel' })
 
 test('Restaurants page sanity test', async ({ page, context }) => {
   await page.goto('/restaurants/62df69e5d66193a33f3bc493')
