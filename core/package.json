@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "yarn sync:prisma && next build",
+    "build": "cross-env NODE_ENV=production yarn sync:prisma && next build",
     "start": "next start",
     "lint": "next lint",
     "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate",
