@@ -49,7 +49,6 @@ test.describe('LOGIN_PAGE_E2E_INTERACTION_SUCCESS', () => {
         name,
       },
     })
-    await redis.del(`user:${phoneNumber}-${ENV}`)
   })
   test.afterAll(async () => {
     await prisma.user.delete({
@@ -57,7 +56,9 @@ test.describe('LOGIN_PAGE_E2E_INTERACTION_SUCCESS', () => {
         id: user.id,
       },
     })
-    await redis.del(`user:${phoneNumber}-${ENV}`)
+    const keys = await redis.keys(`user:${phoneNumber}*`)
+    keys.concat(await redis.keys(`${user.id}*`))
+    await redis.del(...keys)
   })
 
   test('Login page login success', async ({ page, context }) => {

@@ -29,7 +29,6 @@ test.describe('AUTHENTICATION_ME_INTERACTION', () => {
         name,
       },
     })
-    await redis.del(`user:${phoneNumber}-${ENV}`)
   })
   test.afterAll(async () => {
     await prisma.user.delete({
@@ -37,7 +36,9 @@ test.describe('AUTHENTICATION_ME_INTERACTION', () => {
         id: user.id,
       },
     })
-    await redis.del(`user:${phoneNumber}-${ENV}`)
+    const keys = await redis.keys(`user:${phoneNumber}*`)
+    keys.concat(await redis.keys(`${user.id}*`))
+    await redis.del(...keys)
   })
 
   test('/me successfully', async ({ page, context }) => {

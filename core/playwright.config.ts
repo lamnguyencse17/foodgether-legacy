@@ -11,6 +11,9 @@ const config: PlaywrightTestConfig = {
     url: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
     timeout: 120 * 1000,
     reuseExistingServer: process.env.CI === 'true',
+    env: {
+      NODE_ENV: 'test',
+    },
   },
 }
 export default config
