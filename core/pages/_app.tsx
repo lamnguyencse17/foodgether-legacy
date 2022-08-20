@@ -8,20 +8,20 @@ import Header from '../libs/components/header'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState(userContextInitialValue)
-  const { fetchedUser, loading, loggedOut } = useAuth()
+  const { authResponse, loading, loggedOut } = useAuth()
   useEffect(() => {
     if (loading) {
       setUser((user) => ({ ...user, isLoading: true }))
       return
     }
-    if (fetchedUser) {
-      setUser((user) => ({ ...user, ...fetchedUser, isLoading: false }))
-      return
-    }
     if (loggedOut) {
       setUser({ ...userContextInitialValue })
+      return
     }
-  }, [fetchedUser, loading, loggedOut])
+    if (authResponse) {
+      setUser((user) => ({ ...user, ...authResponse, isLoading: false }))
+    }
+  }, [authResponse, loading, loggedOut])
 
   return (
     <ChakraProvider>

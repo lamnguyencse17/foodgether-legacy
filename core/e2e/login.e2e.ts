@@ -87,8 +87,12 @@ test.describe('LOGIN_PAGE_E2E_TEST', () => {
     const response = await page.waitForResponse('**/api/auth/login')
     const cookie = (await response.allHeaders())['set-cookie']
     expect(cookie).toContain('Authorization')
-    page.waitForURL('**/').then(async () => {
-      await expect(page).toHaveURL('/')
-    })
+    page
+      .waitForURL('**/', {
+        waitUntil: 'networkidle',
+      })
+      .then(async () => {
+        await expect(page).toHaveURL('/')
+      })
   })
 })

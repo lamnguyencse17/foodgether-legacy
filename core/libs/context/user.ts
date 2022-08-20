@@ -16,7 +16,7 @@ export const userContextInitialValue = {
 
 export const userContext = createContext<{
   user: typeof userContextInitialValue
-  setUser?: Dispatch<
+  setUser: Dispatch<
     SetStateAction<{
       id: string
       name: string
@@ -24,4 +24,4 @@ export const userContext = createContext<{
       isLoading: boolean
     }>
   >
-}>({ user: userContextInitialValue })
+}>({ user: userContextInitialValue, setUser: () => {} })

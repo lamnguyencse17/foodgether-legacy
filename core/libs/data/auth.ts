@@ -1,19 +1,25 @@
 import useSWR, { Fetcher } from 'swr'
 import { UserClaim } from '../auth'
 
-const fetchUserHandler: Fetcher<UserClaim, string> = async () => {
-  return fetch('/api/auth/me', { credentials: 'include' }).then((res) =>
-    res.json()
-  )
+const fetchUserHandler: Fetcher<
+  UserClaim | { message: string },
+  string
+> = async () => {
+  return fetch('/api/auth/me', { credentials: 'include' }).then(async (res) => {
+    if (!res.ok) {
+      throw new Error((await res.json()).message)
+    }
+    return res.json()
+  })
 }
 
 export default function useAuth() {
   const {
-    data: fetchedUser,
+    data: authResponse,
     mutate,
     error,
   } = useSWR('/api/auth/me', fetchUserHandler)
-  const loading = !fetchedUser && !error
-  const loggedOut = !!error && (error.status === 401 || error.status === 500)
-  return { fetchedUser, mutate, loading, loggedOut }
+  const loading = !authResponse && !error
+  const loggedOut = !!error
+  return { authResponse, mutate, loading, loggedOut }
 }
