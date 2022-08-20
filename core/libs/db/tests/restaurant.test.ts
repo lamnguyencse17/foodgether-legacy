@@ -1,6 +1,6 @@
 import { Restaurant } from '@prisma/client'
 import dayjs from 'dayjs'
-import { createPrismaContext, MockContext } from '../context'
+import { createMockPrismaContext, MockContext } from '../mock'
 import { getIdPathForRestaurant, getRestaurantFromId } from '../restaurant'
 import { restaurantRecord, restaurantRecordIdOnly } from './sample'
 
@@ -10,7 +10,7 @@ describe('DB_RESTAURANT', () => {
     if (process.env.NODE_ENV !== 'test') {
       throw new Error('This test should be run in test environment')
     }
-    mockCtx = createPrismaContext() as unknown as MockContext
+    mockCtx = createMockPrismaContext() as unknown as MockContext
   })
   it('GET_RESTAURANT_AS_EXPECTED', async () => {
     mockCtx.prisma.restaurant.findUnique.mockResolvedValueOnce(restaurantRecord)
