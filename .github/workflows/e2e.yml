@@ -47,3 +47,4 @@ jobs:
           SCRAPER_API: ${{ secrets.SCRAPER_API }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          CI: "true"
