@@ -9,8 +9,8 @@
     "lint": "next lint",
     "sync:prisma": "shx cp -rf ../prisma . && prisma db push && prisma generate",
     "format": "yarn prettier --write .",
-    "test": "cross-env NODE_ENV=test yarn jest",
-    "test:e2e": "cross-env NODE_ENV=e2e playwright test"
+    "test": "cross-env NODE_ENV=test && cross-env MOCK_PRISMA=true yarn jest",
+    "test:e2e": "cross-env NODE_ENV=test playwright test"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.6",
@@ -26,6 +26,7 @@
     "framer-motion": "^6",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "nanoid": "^3.0.0",
     "next": "12.2.5",
     "puppeteer": "^16.1.1",
     "react": "18.2.0",

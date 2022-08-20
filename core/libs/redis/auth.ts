@@ -12,6 +12,6 @@ export const redisBlacklistToken = async (key: string, exp: number) => {
 
 export const redisCheckBlacklistToken = async (key: string) => {
   const redis = getRedisClient()
-  const isBlacklisted = (await redis.get<string>(key)) == 'true'
+  const isBlacklisted = !!(await redis.get<boolean>(key))
   return isBlacklisted
 }

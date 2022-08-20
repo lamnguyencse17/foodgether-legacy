@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended'
+import { MOCK_PRISMA } from '../config'
 
 export type Context = {
   prisma: PrismaClient
@@ -11,7 +12,7 @@ export type MockContext = {
 }
 
 export const createPrismaContext = (): Context | MockContext => {
-  if (process.env.NODE_ENV === 'test') {
+  if (MOCK_PRISMA) {
     return {
       prisma: mockDeep<PrismaClient>(),
     }

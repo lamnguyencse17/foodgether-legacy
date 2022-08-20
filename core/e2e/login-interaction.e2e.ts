@@ -6,9 +6,14 @@ import { getRedisClient } from '../libs/redis/upstash'
 import { ENV } from '../libs/config'
 import { UserClaim } from '../libs/auth'
 
+import { customAlphabet } from 'nanoid'
+
+const nanoid = customAlphabet('1234567890', 6)
+const genRandomPhoneNumber = () => '0919' + nanoid()
+
 test.describe.configure({ mode: 'parallel' })
 test.describe('LOGIN_PAGE_E2E_INTERACTION_FAILED', () => {
-  const phoneNumber = '0919000000'
+  const phoneNumber = genRandomPhoneNumber()
 
   test('Login page submitting and failed', async ({ page }) => {
     await page.goto('/login')
@@ -30,7 +35,7 @@ test.describe('LOGIN_PAGE_E2E_INTERACTION_FAILED', () => {
 
 test.describe('LOGIN_PAGE_E2E_INTERACTION_SUCCESS', () => {
   const name = 'Lam Nguyen'
-  const phoneNumber = '0919000000'
+  const phoneNumber = genRandomPhoneNumber()
   const pin = '123456'
   const { prisma } = createPrismaContext()
   const redis = getRedisClient()
