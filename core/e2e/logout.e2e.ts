@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import dayjs from 'dayjs'
 import { customAlphabet } from 'nanoid'
 import cookie from 'cookie'
+import { Claim } from '../libs/auth'
 
 const nanoid = customAlphabet('1234567890', 6)
 const genRandomPhoneNumber = () => '0919' + nanoid()
@@ -69,8 +70,13 @@ test.describe('AUTHENTICATION_LOGOUT', () => {
     const resetCookie = await meResponse.headerValue('set-cookie')
     expect(resetCookie).toBeTruthy()
     if (resetCookie) {
-      const exp = dayjs(cookie.parse(resetCookie).Expires).unix()
-      expect(dayjs.unix(exp).isBefore(dayjs())).toBeTruthy()
+      expect(
+        dayjs(cookie.parse(resetCookie).Expires).isBefore(dayjs())
+      ).toBeTruthy()
+      const parsed = jwt.decode(token) as Claim
+      const redis = getRedisClient()
+      const result = await redis.get(`${parsed.id}-${parsed.exp}`)
+      expect(result).toEqual(true)
     }
   })
 })
