@@ -13,6 +13,8 @@ import { Claim } from '../libs/auth'
 const nanoid = customAlphabet('1234567890', 6)
 const genRandomPhoneNumber = () => '0919' + nanoid()
 
+test.describe.configure({ mode: 'parallel' })
+
 test.describe('AUTHENTICATION_LOGOUT', () => {
   const name = 'Lam Nguyen'
   const phoneNumber = genRandomPhoneNumber()
@@ -78,5 +80,13 @@ test.describe('AUTHENTICATION_LOGOUT', () => {
       const result = await redis.get(`${parsed.id}-${parsed.exp}`)
       expect(result).toEqual(true)
     }
+  })
+
+  test('logout no token => should redirect', async ({ page }) => {
+    await page.goto('/logout')
+    await page.waitForURL('**/', {
+      waitUntil: 'networkidle',
+    })
+    await expect(page).toHaveURL('/')
   })
 })
