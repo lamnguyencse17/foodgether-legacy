@@ -3,6 +3,7 @@ import { verifyTokenWithDb } from '../../../libs/token'
 import { IS_PRODUCTION, JWT_SECRET } from '../../../libs/config'
 import { redisBlacklistToken } from '../../../libs/redis/auth'
 import cookie from 'cookie'
+import { withSentry } from '@sentry/nextjs'
 
 const handler: NextApiHandler = async (
   req: NextApiRequest,
@@ -37,4 +38,4 @@ const handler: NextApiHandler = async (
   return res.status(200).json({})
 }
 
-export default handler
+export default withSentry(handler)

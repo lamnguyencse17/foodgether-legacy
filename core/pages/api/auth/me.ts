@@ -4,6 +4,7 @@ import { UserClaim } from '../../../libs/auth'
 import { verifyTokenWithDb } from '../../../libs/token'
 import { redisCheckBlacklistToken } from '../../../libs/redis/auth'
 import cookie from 'cookie'
+import { withSentry } from '@sentry/nextjs'
 
 type Data =
   | {
@@ -11,10 +12,7 @@ type Data =
     }
   | UserClaim
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
+const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { Authorization: token } = req.cookies
   if (!token) {
     return res.status(401).json({ message: 'Authorization token is missing' })
@@ -44,3 +42,5 @@ export default async function handler(
   }
   return res.status(200).json({ id, name, phoneNumber })
 }
+
+export default withSentry(handler)

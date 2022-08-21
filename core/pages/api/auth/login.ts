@@ -1,10 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import { IS_PRODUCTION, JWT_SECRET } from '../../../libs/config'
 import { HiddenUserData, hideUserData, loginSchema } from '../../../libs/auth'
 import { findUserByPhone } from '../../../libs/db/users'
 import bcrypt from 'bcryptjs'
 import cookie from 'cookie'
+import { withSentry } from '@sentry/nextjs'
 
 type Data =
   | {
@@ -12,10 +13,10 @@ type Data =
     }
   | HiddenUserData
 
-export default async function handler(
+const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<Data>
-) {
+) => {
   const { phoneNumber, pin } = loginSchema.parse(req.body)
   const user = await findUserByPhone(phoneNumber)
   if (!user) {
@@ -51,3 +52,5 @@ export default async function handler(
   )
   return res.status(200).json({ ...hideUserData })
 }
+
+export default withSentry(handler)

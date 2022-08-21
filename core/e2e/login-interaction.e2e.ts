@@ -3,10 +3,12 @@ import { User } from '@prisma/client'
 import { createPrismaContext } from '../libs/db/context'
 import bcrypt from 'bcryptjs'
 import { getRedisClient } from '../libs/redis/upstash'
-import { ENV } from '../libs/config'
+import jwt from 'jsonwebtoken'
 import { UserClaim } from '../libs/auth'
 
 import { customAlphabet } from 'nanoid'
+import dayjs from 'dayjs'
+import { IS_PRODUCTION, JWT_SECRET } from '../libs/config'
 
 const nanoid = customAlphabet('1234567890', 6)
 const genRandomPhoneNumber = () => '0919' + nanoid()
@@ -87,5 +89,31 @@ test.describe('LOGIN_PAGE_E2E_INTERACTION_SUCCESS', () => {
       name,
       phoneNumber,
     })
+  })
+
+  test('/me successfully', async ({ page, context }) => {
+    const token = jwt.sign(
+      { id: user.id, phoneNumber: user.phoneNumber, name: user.name },
+      JWT_SECRET,
+      {
+        expiresIn: '1d',
+      }
+    )
+    await context.addCookies([
+      {
+        name: 'Authorization',
+        expires: dayjs().add(1, 'day').unix(),
+        httpOnly: true,
+        sameSite: 'Strict',
+        secure: IS_PRODUCTION,
+        url: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
+        value: token,
+      },
+    ])
+    await page.goto('/login')
+    await page.waitForURL('**/', {
+      waitUntil: 'networkidle',
+    })
+    await expect(page).toHaveURL('/')
   })
 })

@@ -6,6 +6,7 @@ const logoutMiddleware = (req: NextRequest) => {
   if (!token || !JWT_SECRET) {
     return NextResponse.redirect(new URL('/', req.url))
   }
+  return NextResponse.next()
 }
 
 export default logoutMiddleware
