@@ -8,5 +8,5 @@ Sentry.init({
     'https://e2a56cc92f044311a7eacdcf4ffd2f1c@o218910.ingest.sentry.io/6647019',
   tracesSampleRate: 1.0,
   enabled: process.env.NODE_ENV === 'production',
-  release: 'foodgether-core@0.2.0',
+  env: process.env.NODE_ENV,
 })
