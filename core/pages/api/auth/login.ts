@@ -50,7 +50,7 @@ const handler: NextApiHandler = async (
       path: '/',
     })
   )
-  return res.status(200).json({ ...hideUserData })
+  return res.status(200).json(hideUserData(user))
 }
 
 export default withSentry(handler)
