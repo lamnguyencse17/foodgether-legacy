@@ -1,9 +1,6 @@
 import puppeteer, { HTTPResponse, Page } from "puppeteer";
 
 export const scrapeRestaurant = async (url: string) => {
-  if (!process.env.BROWSERLESS) {
-    throw new Error("process.env.BROWSERLESS is required");
-  }
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
